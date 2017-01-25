@@ -1,0 +1,41 @@
+<h1>YubiTell</h1>
+<p>
+You are no one to me at the moment. "Accidentally" touch your YubiKey now.
+</p>
+<script>
+(function () {
+  "use strict";
+  function decodeModHex(str) {
+      var src = "cbdefghijklnrtuv";
+      var dst = "0123456789abcdef";
+      var out = "";
+      for (var i = 0; i < str.length; i++) {
+         var c = str[i];
+         var p = src.indexOf(c);       
+         if (p < 0) {
+           return null;
+         }
+         out += dst.charAt(p);
+      }
+      return out;
+  }
+
+  var captured = "";
+  
+  var input = document.getElementsByTagName("input")[0];
+  var p = document.getElementsByTagName("p")[0];
+  document.onkeypress = function (e) {
+    captured += e.key;   
+    if (captured.length > 11) {
+      var parsed = decodeModHex(captured.substring(0, 12));
+      if (!parsed) {
+        captured = "";
+        return;
+      }
+      var id = parseInt(parsed, 16);
+      p.innerHTML = "Your YubiKey serial number is #<b>" + id.toString() + "</b> - I will never forget you! (jk, but I could have stored that information if I wanted to)";   
+      document.onkeypress = null;
+    }
+  }
+})();
+</script>
